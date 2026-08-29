@@ -1,0 +1,18 @@
+# Shared backbone geometry. Phase configs override task/topology/scale only.
+# Width 32 with these depths lands near 6 M parameters for the dual arm; the
+# single-axis arms are widened at run time to match (scripts/train.py).
+width: 32
+topology: unet
+enc_depths: [2, 3]
+bottleneck_depth: 4
+dec_depths: [3, 2]
+refine_depth: 2
+heads: [1, 2, 4]
+window_size: 8
+ffn_expansion: 2.66
+# resolution-aware prior: channel-leaning at full res, spatial-leaning at H/4
+gate_init: [0.8, 0.5, 0.2]
+bias: false
+task: restoration
+scale: 1
+grad_ckpt: false

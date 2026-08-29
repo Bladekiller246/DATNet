@@ -1,0 +1,91 @@
+name: phase1b_multinoise
+model:
+  width: 32
+  topology: unet
+  enc_depths:
+  - 2
+  - 3
+  bottleneck_depth: 4
+  dec_depths:
+  - 3
+  - 2
+  refine_depth: 2
+  heads:
+  - 1
+  - 2
+  - 4
+  window_size: 8
+  ffn_expansion: 2.66
+  gate_init:
+  - 0.8
+  - 0.5
+  - 0.2
+  bias: false
+  task: restoration
+  scale: 1
+  grad_ckpt: false
+data:
+  kind: synthetic
+  family: noise
+  task: denoise
+  root: data/DIV2K/DIV2K_train_HR_sub
+  patch_size: 128
+  repeat: 1
+  num_workers: 4
+  degradations:
+  - kind: gaussian
+    sigma:
+    - 5
+    - 50
+    weight: 2
+  - kind: speckle
+    sigma:
+    - 10
+    - 60
+    weight: 1
+  - kind: speckle_gamma
+    looks:
+    - 1.0
+    - 10.0
+    weight: 1
+  - kind: poisson
+    peak:
+    - 5
+    - 60
+    weight: 1
+  # Impulse noise. Weight 1 rather than 2 because salt-and-pepper is a very
+  # different problem from the others (a sparse set of totally-destroyed pixels
+  # rather than a perturbation of every pixel) and over-weighting it pushes the
+  # model toward median-filter behaviour that hurts the continuous-noise cases.
+  - kind: salt_pepper
+    amount:
+    - 0.005
+    - 0.05
+    weight: 1
+val:
+  gt_root: data/test/McMaster
+  task: denoise
+  sigma: 25
+  max_images: 8
+  scale: 1
+train:
+  total_iters: 60000
+  effective_batch: 16
+  micro_batch: 8
+  amp: bf16
+  channels_last: false
+  lr: 0.0002
+  min_lr: 1.0e-06
+  warmup_iters: 5000
+  weight_decay: 0.0001
+  grad_clip: 1.0
+  ema: true
+  ema_decay: 0.999
+  pixel_loss: l1
+  w_fft: 0.0
+  log_every: 100
+  gate_every: 500
+  ckpt_every: 2000
+  val_every: 5000
+  select_metric: psnr
+  max_nonfinite_streak: 50

@@ -1,0 +1,81 @@
+name: phase5_allinone
+model:
+  width: 32
+  topology: unet
+  enc_depths:
+  - 2
+  - 3
+  bottleneck_depth: 4
+  dec_depths:
+  - 3
+  - 2
+  refine_depth: 2
+  heads:
+  - 1
+  - 2
+  - 4
+  window_size: 8
+  ffn_expansion: 2.66
+  gate_init:
+  - 0.8
+  - 0.5
+  - 0.2
+  bias: false
+  grad_ckpt: true
+sr_scale: 4
+data:
+  denoise:
+    kind: gaussian_denoise
+    root: data/DIV2K/DIV2K_train_HR
+    patch_size: 128
+    sigmas:
+    - 15
+    - 25
+    - 50
+    repeat: 20
+    num_workers: 2
+  deblur:
+    kind: paired
+    task: deblur
+    lq_root: data/GoPro/train/blur
+    gt_root: data/GoPro/train/sharp
+    patch_size: 128
+    repeat: 8
+    num_workers: 2
+  derain:
+    kind: paired
+    task: derain
+    lq_root: data/Rain13K/train/input
+    gt_root: data/Rain13K/train/target
+    patch_size: 128
+    repeat: 2
+    num_workers: 2
+  sr:
+    kind: sr
+    hr_root: data/DIV2K/DIV2K_train_HR
+    lr_root: data/DIV2K/DIV2K_train_LR_bicubic/X4
+    scale: 4
+    patch_size: 96
+    repeat: 20
+    num_workers: 2
+train:
+  total_iters: 300000
+  effective_batch: 16
+  micro_batch: 2
+  amp: bf16
+  lr: 0.0002
+  min_lr: 1.0e-06
+  warmup_iters: 10000
+  weight_decay: 0.0001
+  grad_clip: 1.0
+  ema: true
+  ema_decay: 0.9995
+  pixel_loss: l1
+  w_fft: 0.0
+  w_cls: 0.1
+  balance_momentum: 0.99
+  log_every: 100
+  gate_every: 500
+  ckpt_every: 2000
+  val_every: 10000
+  max_nonfinite_streak: 50

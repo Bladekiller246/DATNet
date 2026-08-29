@@ -1,0 +1,76 @@
+{
+  "run": "runs/phase1_denoise__dual__seed0",
+  "checkpoint": "last.pth",
+  "iteration": 30000,
+  "normalise_branches": false,
+  "sigma": 25,
+  "images": 2,
+  "mean_effective": 0.2587343486064826,
+  "max_abs_delta": 0.6980616294922057,
+  "blocks": {
+    "enc1.blocks.0": {
+      "g": 0.8000220060348511,
+      "effective": 0.4648249672000519
+    },
+    "enc1.blocks.1": {
+      "g": 0.8062103986740112,
+      "effective": 0.501923697277552
+    },
+    "enc2.blocks.0": {
+      "g": 0.5048083066940308,
+      "effective": 0.29024014131827974
+    },
+    "enc2.blocks.1": {
+      "g": 0.5040615797042847,
+      "effective": 0.224382068629706
+    },
+    "enc2.blocks.2": {
+      "g": 0.502495288848877,
+      "effective": 0.24216827454267154
+    },
+    "bottleneck.blocks.0": {
+      "g": 0.2062285840511322,
+      "effective": 0.14789337576286818
+    },
+    "bottleneck.blocks.1": {
+      "g": 0.20719721913337708,
+      "effective": 0.13862973280583346
+    },
+    "bottleneck.blocks.2": {
+      "g": 0.20924393832683563,
+      "effective": 0.23724239339126474
+    },
+    "bottleneck.blocks.3": {
+      "g": 0.21031036972999573,
+      "effective": 0.2606568567831774
+    },
+    "dec2.blocks.0": {
+      "g": 0.5081312656402588,
+      "effective": 0.10945244405183577
+    },
+    "dec2.blocks.1": {
+      "g": 0.5064308643341064,
+      "effective": 0.23889823458750917
+    },
+    "dec2.blocks.2": {
+      "g": 0.5061140060424805,
+      "effective": 0.10560051225529687
+    },
+    "dec1.blocks.0": {
+      "g": 0.8052591681480408,
+      "effective": 0.5072109822328317
+    },
+    "dec1.blocks.1": {
+      "g": 0.8031389713287354,
+      "effective": 0.10507734183652967
+    },
+    "refine.blocks.0": {
+      "g": 0.8044034242630005,
+      "effective": 0.3275038487712337
+    },
+    "refine.blocks.1": {
+      "g": 0.8015902638435364,
+      "effective": 0.23804470625707924
+    }
+  }
+}

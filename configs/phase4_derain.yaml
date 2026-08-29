@@ -1,0 +1,60 @@
+name: phase4_derain
+model:
+  width: 32
+  topology: unet
+  enc_depths:
+  - 2
+  - 3
+  bottleneck_depth: 4
+  dec_depths:
+  - 3
+  - 2
+  refine_depth: 2
+  heads:
+  - 1
+  - 2
+  - 4
+  window_size: 8
+  ffn_expansion: 2.66
+  gate_init:
+  - 0.8
+  - 0.5
+  - 0.2
+  bias: false
+  task: restoration
+  scale: 1
+  grad_ckpt: false
+data:
+  kind: paired
+  task: derain
+  lq_root: data/Rain13K/train/input
+  gt_root: data/Rain13K/train/target
+  patch_size: 128
+  repeat: 2
+  num_workers: 4
+val:
+  gt_root: data/Rain13K/test/Rain100L/target
+  lq_root: data/Rain13K/test/Rain100L/input
+  task: derain
+  max_images: 8
+  scale: 1
+train:
+  total_iters: 100000
+  effective_batch: 16
+  micro_batch: 4
+  amp: bf16
+  lr: 0.0002
+  min_lr: 1.0e-06
+  warmup_iters: 5000
+  weight_decay: 0.0001
+  grad_clip: 1.0
+  ema: true
+  ema_decay: 0.999
+  pixel_loss: l1
+  w_fft: 0.0
+  log_every: 100
+  gate_every: 500
+  ckpt_every: 2000
+  val_every: 5000
+  select_metric: psnr
+  max_nonfinite_streak: 50

@@ -1,0 +1,30 @@
+# Directory patterns are anchored with a leading slash on purpose. Without it,
+# git matches the name at ANY depth: a bare `data/` also excluded the source
+# module `datnet/data/`, silently dropping 7 tracked files from the commit.
+/runs/
+/data/
+*.pth
+__pycache__/
+*.pyc
+.venv/
+
+# training data: 1.4 GB of pre-cropped .npy / .jpg, regenerate per docs/DATA.md
+/datasets/
+
+# qualitative samples: ~69 MB of PNGs. The metrics (.json/.md) in the same
+# directories ARE tracked; re-render figures with scripts/ instead.
+results/**/*.png
+figures/**/*.png
+
+# archives: never commit downloaded or generated bundles
+*.zip
+*.tar
+*.tar.gz
+
+# third-party reference implementations, fetched by scripts/fetch_reference.py
+# read-only comparisons; not dependencies and not ours to redistribute
+/reference/
+
+.DS_Store
+.pytest_cache/
+*.egg-info/

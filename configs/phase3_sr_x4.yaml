@@ -1,0 +1,67 @@
+name: phase3_sr_x4
+model:
+  # width 96 (1.990M params), not the base 32 (0.254M): the flat SR trunk holds
+  # far fewer parameters than the 3-level U-Net at the same width, and Phase 3's
+  # job is to be the single-task UPPER BOUND that Phase 5's SR column is measured
+  # against. Phase 5 uses the U-Net (2.037M, plan §11.1), so a 0.254M Phase-3
+  # baseline would let the joint model beat its own upper bound. 96 matches the
+  # U-Net within 2%, the same parameter-matching discipline used across arms.
+  width: 96
+  topology: flat
+  flat_depth: 12
+  # heads[0]=3, not 1: the flat trunk uses heads[0] for all its blocks, so at
+  # width 96 a single head would give head_dim 96 and a 96x96 MDTA attention
+  # map. Plan §11 decision 5 holds head_dim at 32 everywhere so the learnable
+  # temperature keeps one meaning across phases; 96/3 = 32 restores that, and
+  # keeps Phase 3 comparable to the width-32 U-Net that Phase 5 uses. Costs
+  # nothing: 1.990M -> 1.996M params.
+  heads:
+  - 3
+  - 2
+  - 4
+  window_size: 8
+  ffn_expansion: 2.66
+  gate_init:
+  - 0.8
+  - 0.5
+  - 0.2
+  bias: false
+  task: sr
+  scale: 4
+  grad_ckpt: false
+data:
+  kind: sr
+  hr_root: data/DIV2K/DIV2K_train_HR
+  lr_root: data/DIV2K/DIV2K_train_LR_bicubic/X4
+  scale: 4
+  patch_size: 64
+  repeat: 20
+  num_workers: 4
+val:
+  gt_root: data/test/Set5
+  task: sr
+  scale: 4
+  max_images: 5
+train:
+  # 100k is the plan's own Phase-3 budget (§7.1: "3 arms @ 100k"). total_iters
+  # also defines the cosine schedule, so leaving it at 200k while only ever
+  # training ~100k would mean the LR never anneals to min_lr.
+  total_iters: 100000
+  effective_batch: 16
+  micro_batch: 8
+  amp: bf16
+  lr: 0.0002
+  min_lr: 1.0e-06
+  warmup_iters: 5000
+  weight_decay: 0.0001
+  grad_clip: 1.0
+  ema: true
+  ema_decay: 0.999
+  pixel_loss: l1
+  w_fft: 0.0
+  log_every: 100
+  gate_every: 500
+  ckpt_every: 2000
+  val_every: 5000
+  select_metric: psnr
+  max_nonfinite_streak: 50
